@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Student Management System</title>
+
+<style>
+    body {
+        font-family: Arial;
+        background: #f4f4f4;
+        margin: 20px;
+    }
+
+    h2 {
+        text-align: center;
+    }
+
+    .container {
+        background: white;
+        padding: 20px;
+        max-width: 700px;
+        margin: auto;
+        border-radius: 10px;
+        box-shadow: 0 0 10px gray;
+    }
+
+    input {
+        width: 100%;
+        padding: 10px;
+        margin: 5px 0;
+    }
+
+    button {
+        padding: 10px;
+        margin: 5px;
+        cursor: pointer;
+    }
+
+    table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+    }
+
+    table, th, td {
+        border: 1px solid black;
+        text-align: center;
+    }
+
+    th, td {
+        padding: 10px;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>Student Management System</h2>
+
+    <input type="number" id="roll" placeholder="Roll No">
+    <input type="text" id="name" placeholder="Name">
+    <input type="text" id="course" placeholder="Course">
+    <input type="number" id="marks" placeholder="Marks">
+
+    <button onclick="addStudent()">Add</button>
+    <button onclick="updateStudent()">Update</button>
+    <button onclick="searchStudent()">Search</button>
+    <button onclick="loadStudents()">Refresh</button>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Roll No</th>
+                <th>Name</th>
+                <th>Course</th>
+                <th>Marks</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="table"></tbody>
+    </table>
+</div>
+
+<script>
+let students = JSON.parse(localStorage.getItem("students")) || [];
+
+function saveData() {
+    localStorage.setItem("students", JSON.stringify(students));
+}
+
+function addStudent() {
+    let s = {
+        roll: document.getElementById("roll").value,
+        name: document.getElementById("name").value,
+        course: document.getElementById("course").value,
+        marks: document.getElementById("marks").value
+    };
+
+    students.push(s);
+    saveData();
+    loadStudents();
+}
+
+function loadStudents() {
+    let table = document.getElementById("table");
+    table.innerHTML = "";
+
+    students.forEach((s, index) => {
+        table.innerHTML += `
+            <tr>
+                <td>${s.roll}</td>
+                <td>${s.name}</td>
+                <td>${s.course}</td>
+                <td>${s.marks}</td>
+                <td>
+                    <button onclick="deleteStudent(${index})">Delete</button>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+function deleteStudent(index) {
+    students.splice(index, 1);
+    saveData();
+    loadStudents();
+}
+
+function updateStudent() {
+    let roll = document.getElementById("roll").value;
+
+    let student = students.find(s => s.roll === roll);
+
+    if (student) {
+        student.name = document.getElementById("name").value;
+        student.course = document.getElementById("course").value;
+        student.marks = document.getElementById("marks").value;
+
+        saveData();
+        loadStudents();
+    } else {
+        alert("Student not found!");
+    }
+}
+
+function searchStudent() {
+    let roll = document.getElementById("roll").value;
+
+    let student = students.find(s => s.roll === roll);
+
+    if (student) {
+        alert(
+            "Found:\nName: " + student.name +
+            "\nCourse: " + student.course +
+            "\nMarks: " + student.marks
+        );
+    } else {
+        alert("Student not found!");
+    }
+}
+
+loadStudents();
+</script>
+
+</body>
+</html>
